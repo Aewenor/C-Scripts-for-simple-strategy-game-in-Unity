@@ -17,6 +17,7 @@ public class Zasoby : MonoBehaviour {
         else Destroy(this);
     }
 
+    public Sprite kopalnia, tartak, uprawa;
     public float drewno;
     public float zelazo;
     public float zloto;

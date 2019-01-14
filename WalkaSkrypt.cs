@@ -54,34 +54,34 @@ public class WalkaSkrypt : MonoBehaviour {
         if (GeneratorZmienne.Scena == 2)
         {
             btn1.gameObject.SetActive(true);
-            btn1.GetComponentInChildren<Text>().text = "Pracuj";
+            btn1.GetComponentInChildren<Text>().text = "Praca";
             btn1.GetComponent<Button>().onClick.AddListener(delegate { Drewno(); });
             if (GeneratorZmienne.Kondycja < 30 || GeneratorZmienne.PZ == 0) btn1.interactable = false;
             btn2.gameObject.SetActive(true);
-            btn2.GetComponentInChildren<Text>().text = "Załóż tartak";
+            btn2.GetComponentInChildren<Text>().text = "Tartak";
             if (GeneratorZmienne.Kondycja < 60 || Zasoby.instancja.drewno < 100 || Zasoby.instancja.zywnosc < 200) btn2.interactable = false;
             btn2.GetComponent<Button>().onClick.AddListener(delegate { DrewnoAuto(); });
-            txt.text = "Przed naszym bohaterem znajduje się mały las, w sam raz na wycinkę drewna." + GeneratorZmienne.LastId;
+            txt.text = "Przed naszym bohaterem znajduje się mały las, w sam raz na wycinkę drewna. Nasz bohater może sam pracować lub założyć tartak (60 Kondycji, 100 Drewna oraz 200 Żywności).";
         }
         if (GeneratorZmienne.Scena == 3)
         {
             btn1.gameObject.SetActive(true);
-            btn1.GetComponentInChildren<Text>().text = "Pracuj";
+            btn1.GetComponentInChildren<Text>().text = "Praca";
             btn1.GetComponent<Button>().onClick.AddListener(delegate { ZelZl(); });
             if (GeneratorZmienne.Kondycja < 40 || GeneratorZmienne.PZ == 0) btn1.interactable = false;
             btn2.gameObject.SetActive(true);
-            btn2.GetComponentInChildren<Text>().text = "Załóż kopalnię";
+            btn2.GetComponentInChildren<Text>().text = "Kopalnia";
             if (GeneratorZmienne.Kondycja < 80 || Zasoby.instancja.drewno < 200 || Zasoby.instancja.zelazo < 100 || Zasoby.instancja.zywnosc < 300 || Zasoby.instancja.zloto < 50) btn2.interactable = false;
             btn2.GetComponent<Button>().onClick.AddListener(delegate { ZelZlAuto(); });
-            txt.text = "Przed naszym bohaterem piętrzą się wysokie góry, w których mogą znajdować się żyły żelaza lub złota." + GeneratorZmienne.LastId;
+            txt.text = "Przed naszym bohaterem piętrzą się wysokie góry, w których mogą znajdować się żyły żelaza lub złota. Nasz bohater może sam wydobywać rudę lub założyć kopalnię (80 Kondycji, 200 Drewna, 100 Żelaza, 300 Żywności oraz 50 Złota).";
         }
         if (GeneratorZmienne.Scena == 5)
         {
             btn1.gameObject.SetActive(true);
-            btn1.GetComponentInChildren<Text>().text = "Załóż farmę";
+            btn1.GetComponentInChildren<Text>().text = "Farma";
             btn1.GetComponent<Button>().onClick.AddListener(delegate { Farma(); });
             if (GeneratorZmienne.Kondycja < 80 || Zasoby.instancja.drewno < 200 || Zasoby.instancja.zelazo < 50 || Zasoby.instancja.zywnosc < 100) btn1.interactable = false;
-            txt.text = "Nasz bohater znalazł połać żyznej ziemi nadającą się pod uprawy.";
+            txt.text = "Nasz bohater znalazł połać żyznej ziemi nadającą się pod uprawy. Nasz bohater może tutak założyć farmę (80 Kondycji, 200 Drewna, 50 Żelaza oraz 100 Żywności).";
         }
         if (GeneratorZmienne.Scena == 4)
         {
@@ -115,20 +115,12 @@ public class WalkaSkrypt : MonoBehaviour {
             btn1.gameObject.SetActive(true);
             btn1.GetComponentInChildren<Text>().text = "Statystyki drużyny";
             btn1.GetComponent<Button>().onClick.AddListener(delegate { Party(); });
-            btn2.gameObject.SetActive(true);
-            btn2.GetComponentInChildren<Text>().text = "Zadania";
-            btn2.GetComponent<Button>().onClick.AddListener(delegate { Zad(); });
             btn3.gameObject.SetActive(true);
             btn3.GetComponentInChildren<Text>().text = "Wyjdź z gry";
             btn3.GetComponent<Button>().onClick.AddListener(delegate { Application.Quit(); });
             btn4.GetComponentInChildren<Text>().text = "Wróć";
             txt.text = "Menu Główne";
         }
-    }
-
-    private void Zad()
-    {
-        SceneManager.LoadSceneAsync("Questy", LoadSceneMode.Additive);
     }
 
     private void Buduj() {
@@ -435,8 +427,10 @@ public class WalkaSkrypt : MonoBehaviour {
         Zasoby.instancja.drewnoprzyr += 15;
 		GeneratorZmienne.Czas += 12f;
 		GeneratorZmienne.Kondycja -= 60;
-        GeneratorZmienne.Zmiana = 1;
-		txt.text = "W ciągu kilkunastu godzin nasz bohater najął ludzi i wybudował tartak. Od teraz nasz bohater będzie miał stały przychód drewna." + GeneratorZmienne.LastId;;
+        GeneratorZmienne.trigger.name = "Tartak";
+        GeneratorZmienne.trigger.GetComponent<SpriteRenderer>().sprite = Zasoby.instancja.tartak;
+        GameObject.Find("Gen").GetComponent<Main>().tartaki.Add(GeneratorZmienne.trigger);
+        txt.text = "W ciągu kilkunastu godzin nasz bohater najął ludzi i wybudował tartak. Od teraz nasz bohater będzie miał stały przychód drewna.";
 		btn1.GetComponentInChildren<Text>().text = "Kontynuuj";
 		btn1.GetComponent<Button>().onClick.AddListener(delegate { Back(); });
     }
@@ -451,8 +445,10 @@ public class WalkaSkrypt : MonoBehaviour {
 		GeneratorZmienne.Czas += 12f;
 		GeneratorZmienne.Kondycja -= 80;
         Zasoby.instancja.zywnoscprzyr += 15;
-		GeneratorZmienne.Zmiana = 1;
-		txt.text = "Po godzinach ciężkiej pracy nasz bohater wybudował farmę. Jego rolnicy wzięli się do obsiewania pól."+ GeneratorZmienne.LastId;;
+        GeneratorZmienne.trigger.name = "Uprawa";
+        GeneratorZmienne.trigger.gameObject.GetComponent<SpriteRenderer>().sprite = Zasoby.instancja.uprawa;
+        GameObject.Find("Gen").GetComponent<Main>().pola.Add(GeneratorZmienne.trigger);
+        txt.text = "Po godzinach ciężkiej pracy nasz bohater wybudował farmę. Jego rolnicy wzięli się do obsiewania pól.";
 		btn1.GetComponentInChildren<Text>().text = "Kontynuuj";
 		btn1.GetComponent<Button>().onClick.AddListener(delegate { Back(); });
     }
@@ -470,14 +466,15 @@ public class WalkaSkrypt : MonoBehaviour {
         if (Random.Range(0, 100) <= 65)
         {
             Zasoby.instancja.zelazoprzyr += 10;
-            GeneratorZmienne.Zmiana = 1;
         }
         else
         {
-            Zasoby.instancja.zlotoprzyr += 5;
-            GeneratorZmienne.Zmiana = 1;            
+            Zasoby.instancja.zlotoprzyr += 5;          
         }
-		txt.text = "Nasz bohater i jego ludzie trudzili się aby wybudować kopalnię. Nasz bohater będzie miał stały dopływ złota lub żelaza."+ GeneratorZmienne.LastId;;
+        GeneratorZmienne.trigger.name = "Kopalnia";
+        GeneratorZmienne.trigger.gameObject.GetComponent<SpriteRenderer>().sprite = Zasoby.instancja.kopalnia;
+        GameObject.Find("Gen").GetComponent<Main>().kopalnie.Add(GeneratorZmienne.trigger);
+        txt.text = "Nasz bohater i jego ludzie trudzili się aby wybudować kopalnię. Nasz bohater będzie miał stały dopływ złota lub żelaza.";
 		btn1.GetComponentInChildren<Text>().text = "Kontynuuj";
 		btn1.GetComponent<Button>().onClick.AddListener(delegate { Back(); });
     }

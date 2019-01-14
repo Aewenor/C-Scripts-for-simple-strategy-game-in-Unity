@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class Main : MonoBehaviour {
 
@@ -16,6 +17,7 @@ public class Main : MonoBehaviour {
     public GameObject budynek;
 	public Button menu;
     public Text czas;
+    public Text QuestTXT;
     public List<Vector3> stworzonePola;
 	public List<GameObject> stworzonePolaObiekt;
     public List<GameObject> kopalnie;
@@ -46,7 +48,7 @@ public class Main : MonoBehaviour {
         GeneratorZmienne.Quest = 0;
         SceneManager.LoadSceneAsync("Questy", LoadSceneMode.Additive);
         SceneManager.LoadSceneAsync("Eventy", LoadSceneMode.Additive);
-        InvokeRepeating("Eventy", 5.0f, 3.0f);
+        InvokeRepeating("Eventy", 5.0f, 30.0f);
 		InvokeRepeating("Czas", 0.0f, 5.0f);
 		InvokeRepeating("Zas", 0.0f, 2.0f);
         InvokeRepeating("LudzieP", 60.0f, 60.0f);
@@ -59,7 +61,7 @@ public class Main : MonoBehaviour {
 	
 	private void Eventy(){
 
-		if(Random.Range(0, 100) <= 20){			
+		if(Random.Range(0, 100) <= 10){			
 			GeneratorZmienne.Event = Random.Range(1, 3);			
 			SceneManager.LoadSceneAsync("Eventy", LoadSceneMode.Additive);
 		}
@@ -136,14 +138,13 @@ public class Main : MonoBehaviour {
 	}
 	
 	private void StworzObiekty(){
-        int tmp;		
+        int tmp;
 		gracz.GetComponent<GraczRuch>().hp=100;
 		gracz.GetComponent<GraczRuch>().atak=10;
 		gracz.GetComponent<GraczRuch>().obrona=10;
 		gracz.GetComponent<GraczRuch>().kondycja=100;
-		tmp=Random.Range(0, stworzonePolaObiekt.Count);
+        tmp =Random.Range(0, stworzonePolaObiekt.Count);
         Destroy(Instantiate(gracz, stworzonePolaObiekt[tmp].transform.position, Quaternion.identity));
-		budynek.GetComponent<ZasobyPole>().ident=999;
         target = Instantiate(budynek, gracz.transform.position, Quaternion.identity);
 		foreach(GameObject obj in stworzonePolaObiekt){
 			if(obj.transform.position == Vector3.zero) obj.GetComponent<PustePole>().puste = false;
@@ -209,7 +210,6 @@ public class Main : MonoBehaviour {
 		for(int i=0;i< System.Math.Floor(0.5*liczZas);i++){
             tmp = Random.Range(0, stworzonePola.Count);
 			if(stworzonePolaObiekt[tmp].GetComponent<PustePole>().puste){
-				ziemia.GetComponent<ZasobyPole>().ident=i;
 				Instantiate(ziemia, stworzonePolaObiekt[tmp].transform.position, Quaternion.identity);
 				stworzonePolaObiekt[tmp].GetComponent<PustePole>().puste = false;			
 				}else i--;
@@ -220,7 +220,6 @@ public class Main : MonoBehaviour {
 	    for(int i=System.Convert.ToInt32(System.Math.Floor(0.5*liczZas));i< System.Math.Floor(0.8*liczZas);i++){
             tmp = Random.Range(0, stworzonePola.Count);
 			if(stworzonePolaObiekt[tmp].GetComponent<PustePole>().puste){
-				drewno.GetComponent<ZasobyPole>().ident=i;
 				Instantiate(drewno, stworzonePolaObiekt[tmp].transform.position, Quaternion.identity);
 				stworzonePolaObiekt[tmp].GetComponent<PustePole>().puste = false;			
 				}else i--;
@@ -232,7 +231,6 @@ public class Main : MonoBehaviour {
         {
             tmp = Random.Range(0, stworzonePola.Count);
 			if(stworzonePolaObiekt[tmp].GetComponent<PustePole>().puste){
-				zelzl.GetComponent<ZasobyPole>().ident=i;
 				Instantiate(zelzl, stworzonePolaObiekt[tmp].transform.position, Quaternion.identity);
 				stworzonePolaObiekt[tmp].GetComponent<PustePole>().puste = false;				
 				}else i--;
@@ -268,7 +266,46 @@ public class Main : MonoBehaviour {
     {
         Zasoby.instancja.cel = System.Math.Floor(Vector3.Distance(gracz.transform.position, target.transform.position) / 50);
         Zasoby.instancja.UpdateZasoby();
-		if(GeneratorZmienne.Zwyciestwo == 1) {
+            
+        if (tartaki.Any() && kopalnie.Any() && pola.Any() && GeneratorZmienne.Quest == 0)
+        {
+            GeneratorZmienne.Quest = 1;
+            SceneManager.LoadSceneAsync("Questy", LoadSceneMode.Additive);
+        }
+        if (GeneratorZmienne.Robotnik.Liczba > 0 && GeneratorZmienne.Quest == 1)
+        {
+            GeneratorZmienne.Quest = 2;
+            SceneManager.LoadSceneAsync("Questy", LoadSceneMode.Additive);
+        }
+        if (GeneratorZmienne.Glowny > 0 && GeneratorZmienne.Quest == 2)
+        {
+            GeneratorZmienne.Quest = 3;
+            SceneManager.LoadSceneAsync("Questy", LoadSceneMode.Additive);
+        }
+        if (tartaki.Count() >= 4 && kopalnie.Count() >= 4 && pola.Count() >= 4 && GeneratorZmienne.Quest == 3)
+        {
+            GeneratorZmienne.Quest = 4;
+            SceneManager.LoadSceneAsync("Questy", LoadSceneMode.Additive);
+        }
+        if (GeneratorZmienne.Zolnierz.Liczba >= 3 && GeneratorZmienne.Quest == 4)
+        {
+            GeneratorZmienne.Quest = 5;
+            SceneManager.LoadSceneAsync("Questy", LoadSceneMode.Additive);
+        }
+        if (GeneratorZmienne.Rycerz.Liczba >= 5 && Zasoby.instancja.zywnosc >= 10000 && GeneratorZmienne.Quest == 6)
+        {
+            GeneratorZmienne.WalkaZmienne[0] = 100;
+            GeneratorZmienne.WalkaZmienne[1] = 20;
+            GeneratorZmienne.WalkaZmienne[2] = 15;
+            GeneratorZmienne.WalkaZmienne[3] = 100;
+            GeneratorZmienne.WalkaZmienne[4] = 1;
+            GeneratorZmienne.Nazwa = "Armia";
+            GeneratorZmienne.Opis = "Nadszedł czas na obronę tego, co nasz bohater zbudował. Nasz bohater powrócił do swego gospodarstwa tuż przed armią najeźdźców. Szykuj się do obrony!";
+            GeneratorZmienne.Quest = 7;
+            GeneratorZmienne.Scena = 1;
+            SceneManager.LoadSceneAsync("Walka", LoadSceneMode.Additive);
+        }
+        if (GeneratorZmienne.Zwyciestwo == 1) {
 			GeneratorZmienne.Event = -1;
 			SceneManager.LoadSceneAsync("Eventy");
 		}

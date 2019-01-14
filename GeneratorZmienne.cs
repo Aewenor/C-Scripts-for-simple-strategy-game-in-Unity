@@ -9,6 +9,7 @@ public static class GeneratorZmienne {
 	public static Ludzie Zolnierz = new Ludzie("Żołnierz",6,3,0,20,30);//nazwa,atak,obrona,liczba,kondycja,hp
 	public static Ludzie Rycerz = new Ludzie("Rycerz",5,10,0,10,80);//nazwa,atak,obrona,liczba,kondycja,hp
 	public static int Zwyciestwo;
+    public static GameObject trigger;
     private static int lPol, lZas, lPrz, scena, zmiana, lastid, kond, pz, evnt, baraki, glowny, ludziemax, quest;
     private static float czas;
 	private static string nazwa, opis;
